@@ -11,7 +11,6 @@ func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.log.Debug().Msg("Health check passed")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("ok"))
 }
