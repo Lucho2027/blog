@@ -7,5 +7,5 @@ func (s *Server) Handler() http.Handler {
 
 	mux.HandleFunc("GET /health", s.health)
 
-	return mux
+	return s.recoverMiddleware(s.requestLogger(mux))
 }
