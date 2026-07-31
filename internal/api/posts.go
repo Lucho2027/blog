@@ -8,9 +8,9 @@ import (
 )
 
 type PublicPost struct {
-	Title     string    `json:"title"`
-	Excerpt   string    `json:"excerpt"`
-	Published time.Time `json:"published"`
+	Title     string     `json:"title"`
+	Excerpt   *string    `json:"excerpt"`
+	Published *time.Time `json:"published"`
 }
 type PostResponse struct {
 	Posts []PublicPost `json:"posts"`
@@ -35,10 +35,18 @@ func (s *Server) posts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, p := range posts {
+		var excerpt *string
+		if p.Excerpt.Valid {
+			excerpt = &p.Excerpt.String
+		}
+		var published *time.Time
+		if p.PublishedAt.Valid {
+			published = &p.PublishedAt.Time
+		}
 		resp.Posts = append(resp.Posts, PublicPost{
 			Title:     p.Title,
-			Excerpt:   p.Excerpt.String,
-			Published: p.PublishedAt.Time,
+			Excerpt:   excerpt,
+			Published: published,
 		})
 	}
 
