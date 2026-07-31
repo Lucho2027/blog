@@ -27,9 +27,13 @@ func (s *Server) posts(w http.ResponseWriter, r *http.Request) {
 	resp := PostResponse{
 		Posts: make([]sqlc.Post, 0),
 	}
-	for _, p := range posts {
-		resp.Posts = append(resp.Posts, p)
+
+	if posts == nil {
+		resp.Posts = []sqlc.Post{}
+	} else {
+		resp.Posts = posts
 	}
+
 	if err := writeJSON(w, http.StatusOK, resp); err != nil {
 		s.log.Err(err).Msg("failed to write posts response")
 	}
