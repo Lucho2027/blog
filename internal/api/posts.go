@@ -2,12 +2,18 @@ package api
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/lucho2027/blog/internal/database/sqlc"
 )
 
+type PublicPost struct {
+	Title     string    `json:"title"`
+	Excerpt   string    `json:"excerpt"`
+	Published time.Time `json:"published"`
+}
 type PostResponse struct {
-	Posts []sqlc.Post `json:"posts"`
+	Posts []PublicPost `json:"posts"`
 }
 
 func (s *Server) posts(w http.ResponseWriter, r *http.Request) {
@@ -25,13 +31,15 @@ func (s *Server) posts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp := PostResponse{
-		Posts: make([]sqlc.Post, 0),
+		Posts: make([]PublicPost, 0),
 	}
 
-	if posts == nil {
-		resp.Posts = []sqlc.Post{}
-	} else {
-		resp.Posts = posts
+	for _, p := range posts {
+		resp.Posts = append(resp.Posts, PublicPost{
+			Title:     p.Title,
+			Excerpt:   p.Excerpt.String,
+			Published: p.PublishedAt.Time,
+		})
 	}
 
 	if err := writeJSON(w, http.StatusOK, resp); err != nil {
